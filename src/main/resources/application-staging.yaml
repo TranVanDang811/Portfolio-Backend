@@ -1,0 +1,29 @@
+spring:
+  config:
+    activate:
+      on-profile: staging
+
+  datasource:
+    url: jdbc:mysql://mysql:3306/backend
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+
+jwt:
+  signerKey: ${JWT_SIGNER_KEY}
+  valid-duration: 7200
+  refreshable-duration: 86400
+
+admin:
+  username: ${ADMIN_USERNAME:admin}
+  password: ${ADMIN_PASSWORD:admin}

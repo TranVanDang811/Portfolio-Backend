@@ -1,0 +1,81 @@
+services:
+
+  mysql:
+    image: mysql:8.4
+    container_name: portfolio-mysql
+
+    environment:
+      MYSQL_DATABASE: backend
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+
+    # Đóng cổng 3307 ra ngoài Internet để bảo mật Production
+    # Chỉ mở lại nếu cần kết nối trực tiếp từ máy host để debug
+    # ports:
+    #   - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p${DB_PASSWORD}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    restart: unless-stopped
+
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: portfolio-backend
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+
+      DB_URL: ${DB_URL:-jdbc:mysql://mysql:3306/backend}
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+
+      JWT_SIGNER_KEY: ${JWT_SIGNER_KEY}
+
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
+
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/backend/api/about-me || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 35s
+
+
+volumes:
+  mysql_data:
