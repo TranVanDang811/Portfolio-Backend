@@ -60,6 +60,8 @@ public enum ErrorCode {
     ABOUT_ME_NOT_FOUND(4019, "About Me not found", HttpStatus.NOT_FOUND),
     PROJECT_CATEGORY_NOT_FOUND(4020, "Project Category not found", HttpStatus.NOT_FOUND),
     PROJECT_NOT_FOUND(4021, "Project not found", HttpStatus.NOT_FOUND),
+    SKILL_NOT_FOUND(4022, "Skill not found", HttpStatus.NOT_FOUND),
+    TESTIMONIAL_NOT_FOUND(4023, "Testimonial not found", HttpStatus.NOT_FOUND),
     // ===== Business rules =====
     ORDER_ALREADY_SHIPPED(5001, "Cannot delete a shipped order", HttpStatus.BAD_REQUEST),
     CANNOT_CANCEL_ORDER(5002, "Cannot cancel this order in its current state", HttpStatus.CONFLICT),
@@ -79,6 +81,7 @@ public enum ErrorCode {
     CANNOT_DELETE_THUMBNAIL(5017, "Cannot delete profile picture. Please update your profile picture first.", HttpStatus.BAD_REQUEST),
     ABOUT_ME_ALREADY_EXISTS(5018, "About Me already exists", HttpStatus.CONFLICT),
     PROJECT_CATEGORY_ALREADY_EXISTS(5019, "Project Category already exists", HttpStatus.CONFLICT),
+    SKILL_ALREADY_EXISTS(5020, "Skill already exists", HttpStatus.CONFLICT)
     ;
     private final int code;
     private final String message;

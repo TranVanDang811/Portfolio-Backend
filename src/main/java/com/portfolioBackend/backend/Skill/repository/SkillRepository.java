@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface SkillRepository extends JpaRepository<Skill, String> {
     List<Skill> findAllByOrderByDisplayOrderAsc();
+    boolean existsByNameIgnoreCase(String name);
 }

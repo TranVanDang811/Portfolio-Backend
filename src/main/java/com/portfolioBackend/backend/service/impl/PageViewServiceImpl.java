@@ -25,6 +25,7 @@ public class PageViewServiceImpl implements PageViewService {
 
     PageViewRepository pageViewRepository;
 
+    // Record incoming page view visit with request metadata
     @Override
     @Transactional
     public PageViewResponse recordPageView(PageViewRequest request, String ipAddress, String userAgent, String referrer) {
@@ -46,6 +47,7 @@ public class PageViewServiceImpl implements PageViewService {
                 .build();
     }
 
+    // Retrieve summarized view counts and unique visitors
     @Override
     @Transactional(readOnly = true)
     public PageViewSummaryResponse getSummaryStats() {
@@ -72,6 +74,7 @@ public class PageViewServiceImpl implements PageViewService {
                 .build();
     }
 
+    // Generate daily views and visitors timeline over a given number of days
     @Override
     @Transactional(readOnly = true)
     public List<PageViewTimelineResponse> getTimelineStats(int days) {
@@ -104,7 +107,7 @@ public class PageViewServiceImpl implements PageViewService {
                     .build());
         }
 
-        // Đảm bảo đủ các ngày trong chu kỳ (ngày nào không có view sẽ trả về 0)
+        // Fill missing days with zero views in date range
         List<PageViewTimelineResponse> result = new ArrayList<>();
         for (int i = 0; i < days; i++) {
             LocalDate current = startDate.plusDays(i);
@@ -119,6 +122,7 @@ public class PageViewServiceImpl implements PageViewService {
         return result;
     }
 
+    // Get top visited page paths
     @Override
     @Transactional(readOnly = true)
     public List<PageViewTopPageResponse> getTopPages(int limit) {
@@ -134,6 +138,7 @@ public class PageViewServiceImpl implements PageViewService {
                 .collect(Collectors.toList());
     }
 
+    // Get total lifetime page views
     @Override
     @Transactional(readOnly = true)
     public long getTotalViews() {

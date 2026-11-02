@@ -21,7 +21,7 @@ import java.util.Map;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-    // Xử lý lỗi custom AppException
+    // Handle custom AppException
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<?>> handleAppException(AppException ex) {
         ErrorCode errorCode = ex.getErrorCode();
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(errorCode.getCode(), ex.getMessage()));
     }
 
-    // Lỗi validate @Valid (BindException)
+    // Handle @Valid validation errors (BindException)
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ApiResponse<?>> handleBindException(BindException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream()
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message));
     }
 
-    // Lỗi kiểu dữ liệu không hợp lệ
+    // Handle invalid parameter type mismatch
     @ExceptionHandler(TypeMismatchException.class)
     public ResponseEntity<ApiResponse<?>> handleTypeMismatch(TypeMismatchException ex) {
         String message = "Invalid value for parameter: " + ex.getPropertyName();
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message));
     }
 
-    // Lỗi khi JSON không đọc được
+    // Handle malformed or unreadable JSON payload
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<?>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         return ResponseEntity
@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Invalid JSON format"));
     }
 
-    // Thiếu request param
+    // Handle missing required query parameters
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiResponse<?>> handleMissingParams(MissingServletRequestParameterException ex) {
         String message = "Missing parameter: " + ex.getParameterName();
@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
 
 
 
-    // Sai method (GET thay vì POST)
+    // Handle unsupported HTTP method (e.g. GET instead of POST)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiResponse<?>> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         String message = "Method not supported: " + ex.getMethod();
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.METHOD_NOT_ALLOWED.value(), message));
     }
 
-    // Sai Content-Type (VD: cần JSON mà gửi form-data)
+    // Handle unsupported Content-Type (e.g. expected JSON but received form-data)
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ApiResponse<?>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
         return ResponseEntity
@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
     }
 
 
-    // xử lý tất cả exception không rõ loại
+    // Fallback handler for all uncategorized exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleUncategorized(Exception ex) {
         ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
@@ -97,20 +97,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(errorCode.getCode(), errorCode.getMessage()));
     }
-    // 403 Forbidden - không đủ quyền truy cập
-    // Xử lý lỗi truy cập không hợp lệ (ví dụ: không đủ quyền)
+
+    // Handle 403 Forbidden / Access Denied
     @ExceptionHandler(value = org.springframework.security.access.AccessDeniedException.class)
     ResponseEntity<ApiResponse<Object>> handlingAccessDeniedException(AccessDeniedException exception) {
-        ErrorCode errorCode = ErrorCode.UNAUTHORIZED; // Lỗi truy cập trái phép
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED; // Unauthorized access error
 
-        return ResponseEntity.status(errorCode.getStatusCode()) // Trả về mã lỗi và thông báo tương ứng
+        return ResponseEntity.status(errorCode.getStatusCode())
                 .body(ApiResponse.builder()
                         .code(errorCode.getCode())
                         .message(errorCode.getMessage())
                         .build());
     }
 
-    // xử lý lỗi validate @Valid
+    // Handle @Valid MethodArgumentNotValidException
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleValidation(MethodArgumentNotValidException ex) {
         String enumKey = ex.getFieldError() != null ? ex.getFieldError().getDefaultMessage() : null;

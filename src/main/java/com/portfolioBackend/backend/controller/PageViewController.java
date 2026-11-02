@@ -24,11 +24,9 @@ public class PageViewController {
 
     PageViewService pageViewService;
 
-    /**
-     * Public API: Ghi nhận 1 lượt truy cập trang
-     */
     @PostMapping("/api/page-views")
-    public ApiResponse<PageViewResponse> recordPageView(@Valid @RequestBody PageViewRequest request, HttpServletRequest httpRequest) {
+    public ApiResponse<PageViewResponse> recordPageView(@Valid @RequestBody PageViewRequest request,
+            HttpServletRequest httpRequest) {
         String ipAddress = getClientIp(httpRequest);
         String userAgent = httpRequest.getHeader("User-Agent");
         String referrer = httpRequest.getHeader("Referer");
@@ -37,9 +35,6 @@ public class PageViewController {
                 .build();
     }
 
-    /**
-     * Public API: Lấy tổng số lượt xem công khai (ví dụ hiển thị widget footer)
-     */
     @GetMapping("/api/page-views/count")
     public ApiResponse<Map<String, Long>> getTotalViews() {
         return ApiResponse.<Map<String, Long>>builder()
@@ -47,9 +42,6 @@ public class PageViewController {
                 .build();
     }
 
-    /**
-     * Admin API: Thống kê tổng quan (Hôm nay, Tháng này, Tổng, Khách duy nhất)
-     */
     @GetMapping("/api/admin/page-views/stats/summary")
     public ApiResponse<PageViewSummaryResponse> getSummaryStats() {
         return ApiResponse.<PageViewSummaryResponse>builder()
@@ -57,26 +49,17 @@ public class PageViewController {
                 .build();
     }
 
-    /**
-     * Admin API: Thống kê số view theo từng ngày (Timeline cho biểu đồ)
-     * Mặc định 7 ngày, tối đa 90 ngày
-     */
     @GetMapping("/api/admin/page-views/stats/timeline")
     public ApiResponse<List<PageViewTimelineResponse>> getTimelineStats(
-            @RequestParam(defaultValue = "7") int days
-    ) {
+            @RequestParam(defaultValue = "7") int days) {
         return ApiResponse.<List<PageViewTimelineResponse>>builder()
                 .result(pageViewService.getTimelineStats(days))
                 .build();
     }
 
-    /**
-     * Admin API: Top các trang được truy cập nhiều nhất
-     */
     @GetMapping("/api/admin/page-views/stats/top-pages")
     public ApiResponse<List<PageViewTopPageResponse>> getTopPages(
-            @RequestParam(defaultValue = "5") int limit
-    ) {
+            @RequestParam(defaultValue = "5") int limit) {
         return ApiResponse.<List<PageViewTopPageResponse>>builder()
                 .result(pageViewService.getTopPages(limit))
                 .build();

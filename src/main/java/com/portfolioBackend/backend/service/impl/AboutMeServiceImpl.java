@@ -26,6 +26,7 @@ public class AboutMeServiceImpl implements AboutMeService {
     AboutMeMapper aboutMeMapper;
     CloudinaryService cloudinaryService;
 
+    // Retrieve the single about-me profile
     @Override
     @Transactional(readOnly = true)
     public AboutMeResponse getAboutMe() {
@@ -36,6 +37,7 @@ public class AboutMeServiceImpl implements AboutMeService {
         return aboutMeMapper.toResponse(aboutMe);
     }
 
+    // Create the about-me profile with optional avatar upload
     @Override
     public AboutMeResponse createAboutMe(AboutMeRequest request, MultipartFile avatar) {
         if (aboutMeRepository.count() > 0) {
@@ -51,6 +53,7 @@ public class AboutMeServiceImpl implements AboutMeService {
         return aboutMeMapper.toResponse(savedAboutMe);
     }
 
+    // Update about-me profile and replace avatar if provided
     @Override
     public AboutMeResponse updateAboutMe(AboutMeRequest request, MultipartFile avatar) {
         AboutMe aboutMe = aboutMeRepository.findAll().stream().findFirst().orElseThrow(() -> new AppException(ErrorCode.ABOUT_ME_NOT_FOUND));

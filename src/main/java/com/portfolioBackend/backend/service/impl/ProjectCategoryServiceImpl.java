@@ -17,9 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -55,8 +52,7 @@ public class ProjectCategoryServiceImpl implements ProjectCategoryService {
     public ProjectCategoryResponse getById(String id) {
 
         ProjectCategory category = projectCategoryRepository.findById(id)
-                .orElseThrow(() ->
-                        new AppException(ErrorCode.PROJECT_CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_CATEGORY_NOT_FOUND));
 
         return projectCategoryMapper.toResponse(category);
     }
@@ -67,8 +63,7 @@ public class ProjectCategoryServiceImpl implements ProjectCategoryService {
             ProjectCategoryRequest request) {
 
         ProjectCategory category = projectCategoryRepository.findById(id)
-                .orElseThrow(() ->
-                        new AppException(ErrorCode.PROJECT_CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_CATEGORY_NOT_FOUND));
 
         if (!category.getName().equalsIgnoreCase(request.getName())
                 && projectCategoryRepository.existsByNameIgnoreCase(request.getName())) {
@@ -78,8 +73,7 @@ public class ProjectCategoryServiceImpl implements ProjectCategoryService {
 
         projectCategoryMapper.updateEntity(request, category);
 
-        ProjectCategory updatedCategory =
-                projectCategoryRepository.save(category);
+        ProjectCategory updatedCategory = projectCategoryRepository.save(category);
 
         return projectCategoryMapper.toResponse(updatedCategory);
     }
@@ -88,8 +82,7 @@ public class ProjectCategoryServiceImpl implements ProjectCategoryService {
     public void delete(String id) {
 
         ProjectCategory category = projectCategoryRepository.findById(id)
-                .orElseThrow(() ->
-                        new AppException(ErrorCode.PROJECT_CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_CATEGORY_NOT_FOUND));
 
         projectCategoryRepository.delete(category);
     }

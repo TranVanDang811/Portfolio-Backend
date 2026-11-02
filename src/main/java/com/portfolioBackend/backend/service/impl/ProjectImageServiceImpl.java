@@ -30,6 +30,7 @@ public class ProjectImageServiceImpl implements ProjectImageService {
     CloudinaryService cloudinaryService;
     ProjectMapper projectMapper;
 
+    // Upload multiple project images and append to existing display order
     @Override
     @Transactional
     public List<ProjectImageResponse> uploadImages(String projectId, MultipartFile[] files) {
@@ -65,6 +66,7 @@ public class ProjectImageServiceImpl implements ProjectImageService {
                 .toList();
     }
 
+    // Retrieve all images of a project ordered by display order
     @Override
     public List<ProjectImageResponse> getImagesByProjectId(
             String projectId) {
@@ -75,6 +77,7 @@ public class ProjectImageServiceImpl implements ProjectImageService {
                 .toList();
     }
 
+    // Delete a single image and remove from Cloudinary
     @Override
     @Transactional
     public void deleteImageById(String imageId) {
@@ -92,6 +95,7 @@ public class ProjectImageServiceImpl implements ProjectImageService {
         imageRepository.delete(image);
     }
 
+    // Batch delete images by IDs and remove from Cloudinary
     @Override
     @Transactional
     public void deleteImagesByIds(List<String> imageIds) {
@@ -101,13 +105,15 @@ public class ProjectImageServiceImpl implements ProjectImageService {
         List<ProjectImage> images = imageRepository.findAllById(imageIds);
         if (images.isEmpty()) {
             throw new AppException(ErrorCode.RESOURCE_NOT_FOUND);
-        } // Prevent deleting the current thumbnail
+        }
+        // Prevent deleting the current thumbnail
         for (ProjectImage image : images) {
             Project project = image.getProject();
             if (project.getThumbnailUrl() != null && project.getThumbnailUrl().equals(image.getImageUrl())) {
                 throw new AppException(ErrorCode.CANNOT_DELETE_THUMBNAIL);
             }
-        } // Delete images from Cloudinary
+        }
+        // Delete images from Cloudinary
         for (ProjectImage image : images) {
             if (image.getPublicId() != null && !image.getPublicId().isBlank()) {
                 cloudinaryService.deleteImage(image.getPublicId());
@@ -116,11 +122,12 @@ public class ProjectImageServiceImpl implements ProjectImageService {
         imageRepository.deleteAll(images);
     }
 
+    // Set specified image as the project's primary thumbnail
     @Override
     @Transactional
     public ProjectImageResponse setMainImage(String imageId) {
         ProjectImage image = imageRepository.findById(imageId).orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
-        Project project = image.getProject(); // Set this image as the project's thumbnail
+        Project project = image.getProject();
         project.setThumbnailUrl(image.getImageUrl());
         projectRepository.save(project);
         return projectMapper.toProjectImageResponse(image);

@@ -41,6 +41,7 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectMapper projectMapper;
 
 
+    // Create project with category, unique slug, and uploaded images
     @Override
     public ProjectResponse create(ProjectRequest request, MultipartFile[] images) {
         Project project = projectMapper.toProject(request);
@@ -78,12 +79,14 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.toProjectResponse(project);
     }
 
+    // Get all projects
     @Override
     @Transactional(readOnly = true)
     public List<ProjectResponse> getAll() {
         return projectRepository.findAll().stream().map(projectMapper::toProjectResponse).toList();
     }
 
+    // Get project by ID and increment view count
     @Override
     public ProjectResponse getById(String projectId) {
         Project project = projectRepository.findById(projectId)
@@ -93,6 +96,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.toProjectResponse(project);
     }
 
+    // Get project by unique slug and increment view count
     @Override
     public ProjectResponse getBySlug(String slug) {
         Project project = projectRepository.findBySlug(slug)
@@ -102,6 +106,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.toProjectResponse(project);
     }
 
+    // Get featured projects for portfolio highlights
     @Override
     @Transactional(readOnly = true)
     public List<ProjectResponse> getFeaturedProjects() {
@@ -110,6 +115,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .toList();
     }
 
+    // Get all projects belonging to a category
     @Override
     @Transactional(readOnly = true)
     public List<ProjectResponse> getProjectsByCategory(String categoryId) {
@@ -118,7 +124,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .toList();
     }
 
-
+    // Update project information and category association
     @Override
     public ProjectResponse update(String projectId, ProjectRequest request) {
 
@@ -136,7 +142,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectMapper.toProjectResponse(projectRepository.save(project));
     }
 
-
+    // Delete project along with associated images from Cloudinary and DB
     @Override
     public void delete(String projectId) {
 
@@ -154,6 +160,7 @@ public class ProjectServiceImpl implements ProjectService {
         projectRepository.delete(project);
     }
 
+    // Generate collision-free URL slug
     private String generateUniqueSlug(String title, String customSlug) {
         String baseSlug = (customSlug != null && !customSlug.isBlank())
                 ? toSlug(customSlug)
@@ -166,6 +173,7 @@ public class ProjectServiceImpl implements ProjectService {
         return slug;
     }
 
+    // Convert string to normalized URL-friendly slug
     private String toSlug(String input) {
         if (input == null) return "project";
         String normalized = java.text.Normalizer.normalize(input, java.text.Normalizer.Form.NFD);

@@ -47,7 +47,7 @@ class AuthenticationServiceTest {
         ReflectionTestUtils.setField(authenticationService, "refreshableDuration", 86400L);
 
         sampleUser = User.builder()
-                .id(java.util.UUID.randomUUID())
+                .id(java.util.UUID.randomUUID().toString())
                 .username("admin")
                 .password("$2a$10$hashedPasswordSample")
                 .build();

@@ -8,32 +8,20 @@ services:
       MYSQL_DATABASE: backend
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
 
-    # Đóng cổng 3307 ra ngoài Internet để bảo mật Production
-    # Chỉ mở lại nếu cần kết nối trực tiếp từ máy host để debug
-    # ports:
-    #   - "3307:3306"
+    ports:
+      - "3306:3306"
 
     volumes:
       - mysql_data:/var/lib/mysql
 
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-uroot",
-          "-p${DB_PASSWORD}"
-        ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${DB_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 20s
 
     restart: unless-stopped
-
 
   backend:
     build:
@@ -62,12 +50,11 @@ services:
     restart: unless-stopped
 
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/backend/api/about-me || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/backend/api/about-me || exit 1" ]
       interval: 20s
       timeout: 5s
       retries: 3
       start_period: 35s
-
 
 volumes:
   mysql_data:

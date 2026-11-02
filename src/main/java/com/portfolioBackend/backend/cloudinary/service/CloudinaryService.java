@@ -17,6 +17,7 @@ import java.util.Map;
 public class CloudinaryService {
     private final Cloudinary cloudinary;
 
+    // Upload image to Cloudinary and return URL with public ID
     public CloudinaryUploadResult uploadImage(MultipartFile file) {
         try {
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
@@ -28,6 +29,7 @@ public class CloudinaryService {
         }
     }
 
+    // Delete image from Cloudinary by public ID
     public void deleteImage(String publicId) {
         try {
             cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());

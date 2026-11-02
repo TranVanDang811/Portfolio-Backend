@@ -43,6 +43,12 @@ public class AboutMeRequest {
     @Size(max = 500, message = "LinkedIn URL must not exceed 500 characters")
     String linkedinUrl;
 
+    @Size(max = 500, message = "Facebook URL must not exceed 500 characters")
+    String facebookUrl;
+
+    @Size(max = 500, message = "Instagram URL must not exceed 500 characters")
+    String instagramUrl;
+
     @Size(max = 500, message = "CV URL must not exceed 500 characters")
     String cvUrl;
 }

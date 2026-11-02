@@ -23,43 +23,42 @@ import java.text.ParseException;
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
 
-    // Lấy giá trị của `jwt.signerKey` từ file cấu hình (application.yml hoặc application.properties)
+    // Secret signer key loaded from configuration
     @Value("${jwt.signerKey}")
     private String signerKey;
 
-    // Inject service AuthenticationService để gọi API introspection
-    // @Lazy dùng để phá vỡ circular dependency:
-    // SecurityConfig -> CustomJwtDecoder -> AuthenticationService -> PasswordEncoder -> SecurityConfig
+    // Inject AuthenticationService for token introspection
+    // @Lazy breaks circular dependency: SecurityConfig -> CustomJwtDecoder -> AuthenticationService -> PasswordEncoder -> SecurityConfig
     @Autowired
     @Lazy
     private AuthenticationService authenticationService;
 
-    // Đối tượng NimbusJwtDecoder dùng để giải mã JWT, sẽ được khởi tạo khi cần
+    // Lazily initialized NimbusJwtDecoder instance
     private NimbusJwtDecoder nimbusJwtDecoder = null;
 
 
     private static final Logger logger = LoggerFactory.getLogger(CustomJwtDecoder.class);
 
-    // Override phương thức decode() từ interface JwtDecoder để thực hiện giải mã JWT
+    // Override decode() from JwtDecoder to introspect and decode JWT
     @Override
     public Jwt decode(String token) throws JwtException {
         try {
-            // Gọi service introspect để kiểm tra token có hợp lệ không
+            // Introspect token validity
             var response = authenticationService.introspect(
                     IntrospectRequest.builder().token(token).build());
 
-            // Nếu token không hợp lệ, ném ra ngoại lệ JwtException
+            // Throw JwtException if token is invalid
             if (!response.isValid()) {
                 logger.warn("Token invalid: {}", token);
                 throw new JwtException("Token invalid");
             }
         } catch (JOSEException | ParseException e) {
             logger.error("Error during token introspection", e);
-            // Nếu có lỗi xảy ra trong quá trình kiểm tra, ném ra JwtException với thông báo lỗi
+            // Propagate token verification failures
             throw new JwtException(e.getMessage());
         }
 
-        // Giải mã và trả về đối tượng JWT
+        // Decode and return JWT claims
         return nimbusJwtDecoder.decode(token);
     }
 

@@ -51,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${jwt.refreshable-duration}")
     protected long refreshableDuration;
 
-    // Xác thực token và kiểm tra tính hợp lệ
+    // Verify token validity
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
 
@@ -63,7 +63,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return IntrospectResponse.builder().valid(true).build();
     }
 
-    // Xác thực user và tạo JWT nếu hợp lệ
+    // Authenticate user credentials and generate JWT tokens
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository
                 .findByUsername(request.getUsername())
@@ -83,7 +83,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    // Đăng xuất và vô hiệu hóa token
+    // Logout and invalidate token
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
         try {
             var signToken = verifyToken(request.getToken(), true);
@@ -99,7 +99,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    // Xác minh JWT
+    // Verify JWT signature and expiration
     private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -123,7 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return signedJWT;
     }
 
-    // Làm mới token
+    // Refresh access token using valid refresh token
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         var signedJWT = verifyToken(request.getToken(), true);
 
@@ -176,7 +176,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    // Tạo token
+    // Generate JWT access token
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 

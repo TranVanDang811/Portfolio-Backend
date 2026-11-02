@@ -34,7 +34,7 @@ public class ApplicationInitConfig {
         return args -> {
             log.info("Checking initial application setup...");
 
-            // Khởi tạo tài khoản Admin duy nhất nếu chưa tồn tại
+            // Initialize unique default Admin user if not exists
             if (userRepository.findByUsername(adminUsername).isEmpty()) {
                 User user = User.builder()
                         .username(adminUsername)

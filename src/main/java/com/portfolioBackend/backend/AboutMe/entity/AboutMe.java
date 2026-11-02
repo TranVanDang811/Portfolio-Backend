@@ -52,6 +52,12 @@ public class AboutMe {
     @Column(name = "linkedin_url", length = 500)
     private String linkedinUrl;
 
+    @Column(name = "facebook_url", length = 500)
+    private String facebookUrl;
+
+    @Column(name = "instagram_url", length = 500)
+    private String instagramUrl;
+
     @Column(name = "cv_url", length = 500)
     private String cvUrl;
 }

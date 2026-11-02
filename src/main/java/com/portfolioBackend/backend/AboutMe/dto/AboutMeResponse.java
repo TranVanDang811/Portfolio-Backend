@@ -35,5 +35,9 @@ public class AboutMeResponse {
 
     String linkedinUrl;
 
+    String facebookUrl;
+
+    String instagramUrl;
+
     String cvUrl;
 }
